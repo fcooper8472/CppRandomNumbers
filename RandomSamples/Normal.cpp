@@ -3,12 +3,12 @@
 #include <random>
 
 int main() {
-    // Seed a Mersenne twister with a random number from a random_device
+    // Seed a Mersenne twister with a 'true' random seed from random_device
     std::random_device rd{};
     std::mt19937 gen{rd()};
 
     // Params
-    const std::size_t n = 1000;
+    const std::size_t n = 25'000;
     const double mean = 1.23;
     const double std_dev = 2.34;
 
@@ -21,7 +21,7 @@ int main() {
         x = dist(gen);
     }
 
-    PrintVectorToFile("Normal_1.23_2.34", vec);  // This is just for testing and can be removed
+    PrintVectorToFile("Normal_mean=1.23_std=2.34", vec);  // This is just for testing and can be removed
 
     return 0;
 }
