@@ -19,6 +19,7 @@ exes_and_outputs = {
     'rand_gamma': "Gamma_alpha=4_beta=0.5",
     'rand_cauchy': "Cauchy_mu=8.9_sigma=2.3",
     'rand_exponential': "Exponential_rate=2.3",
+    'rand_half_cauchy': "HalfCauchy_mu=1.2_sigma=2.3",
 }
 
 
@@ -68,6 +69,9 @@ def main():
 
     print('  exponential')
     plot_exponential()
+
+    print('  half cauchy')
+    plot_half_cauchy()
 
     # Verify all outputs have a graph
     print('\n### Verifying all graphs exist')
@@ -216,7 +220,7 @@ def plot_cauchy():
 
 def plot_exponential():
     """
-    Plot the data from the C++ script against the scipy pdf, for the cauchy distribution
+    Plot the data from the C++ script against the scipy pdf, for the exponential distribution
     """
     raw_output = exes_and_outputs['rand_exponential']
 
@@ -235,6 +239,38 @@ def plot_exponential():
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def plot_half_cauchy():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the half cauchy distribution
+    """
+    raw_output = exes_and_outputs['rand_half_cauchy']
+
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_mu = 1.2
+    cpp_sigma = 2.3
+
+    data = np.loadtxt(output_file)
+    lower = 0.0
+    upper = np.quantile(data, 0.9)
+    data = np.clip(data, lower, upper)
+
+    import math
+    scale_fac = 1.0 / (0.5 + 0.31830988618379067154 * math.atan(cpp_mu / cpp_sigma))
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.halfcauchy.pdf(x, loc=cpp_mu, scale=cpp_sigma)
+    z = scale_fac / (math.pi * cpp_sigma * (1. + ((x - cpp_mu)/cpp_sigma) ** 2))
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.plot(x, z, 'g')
     plt.title(raw_output.replace('_', ' '))
     plt.savefig(graph_name)
     plt.close()
