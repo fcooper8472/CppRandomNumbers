@@ -4,30 +4,14 @@ import subprocess
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 import scipy.stats
 
-
-# Output directory
+# Define directories
 output_dir = os.path.join('/tmp', 'CppRandomNumbers', 'RandomSamples')
-
 script_dir = os.path.realpath(os.path.dirname(__file__))
 build_dir = os.path.join(script_dir, 'Debug')
 
-print('\n### Cleaning output directory')
-if os.path.isdir(output_dir):
-    for file in os.listdir(output_dir):
-        subprocess.call(['rm', file], cwd=output_dir)
-
-print('\n### Making build directory')
-subprocess.call(['mkdir', '-p', build_dir])
-
-print('\n### Running CMake')
-subprocess.call(['cmake', '..'], cwd=build_dir)
-
-print('\n### Building all')
-subprocess.call(['cmake', '--build', '.'], cwd=build_dir)
-
+# Define the C++ targets and associated data files
 exes_and_outputs = {
     'rand_normal': "Normal_mean=1.23_std=2.34",
     'rand_uniform': "Uniform_a=1.23_b=2.34",
@@ -35,119 +19,155 @@ exes_and_outputs = {
     'rand_gamma': "Gamma_alpha=4_beta=0.5",
 }
 
-print('\n### Running executables...')
-for executable in exes_and_outputs.keys():
-    print('  {}'.format(executable))
-    subprocess.call(['./{}'.format(executable)], cwd=build_dir)
 
-# Verify all outputs exist
-print('\n### Verifying all outputs exist')
-for val in exes_and_outputs.values():
-    output_file = os.path.join(output_dir, val)
-    assert(os.path.isfile(output_file))
+def main():
 
-print('\n### Creating graphs for...')
+    print('\n### Cleaning output directory')
+    if os.path.isdir(output_dir):
+        for file in os.listdir(output_dir):
+            subprocess.call(['rm', file], cwd=output_dir)
 
-###########################
-# Normal dist
-###########################
-print('  normal')
-raw_output = exes_and_outputs['rand_normal']
+    print('\n### Making build directory')
+    subprocess.call(['mkdir', '-p', build_dir])
 
-output_file = os.path.join(output_dir, raw_output)
-graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+    print('\n### Running CMake')
+    subprocess.call(['cmake', '..'], cwd=build_dir)
 
-cpp_mean = 1.23
-cpp_std = 2.34
+    print('\n### Building all')
+    subprocess.call(['cmake', '--build', '.'], cwd=build_dir)
 
-x = np.linspace(cpp_mean - 3 * cpp_std, cpp_mean + 3 * cpp_std, num=100)
-y = scipy.stats.norm.pdf(x, cpp_mean, cpp_std)
+    print('\n### Running executables...')
+    for executable in exes_and_outputs.keys():
+        print('  {}'.format(executable))
+        subprocess.call(['./{}'.format(executable)], cwd=build_dir)
 
-data = np.loadtxt(output_file)
+    # Verify all outputs exist
+    print('\n### Verifying all outputs exist')
+    for val in exes_and_outputs.values():
+        output_file = os.path.join(output_dir, val)
+        assert(os.path.isfile(output_file))
 
-plt.hist(data, bins=25, density=True)
-plt.plot(x, y)
-plt.title(raw_output.replace('_', ' '))
-plt.savefig(graph_name)
-plt.close()
+    print('\n### Creating graphs for...')
 
-###########################
-# Uniform dist
-###########################
-print('  uniform')
-raw_output = exes_and_outputs['rand_uniform']
+    print('  normal')
+    plot_normal()
 
-output_file = os.path.join(output_dir, raw_output)
-graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+    print('  uniform')
+    plot_uniform()
 
-cpp_a = 1.23
-cpp_b = 2.34
+    print('  beta')
+    plot_beta()
 
-scipy_loc = cpp_a
-scipy_scale = cpp_b - cpp_a
+    print('  gamma')
+    plot_gamma()
 
-x = np.linspace(cpp_a, cpp_b, num=100)
-y = scipy.stats.uniform.pdf(x, loc=scipy_loc, scale=scipy_scale)
+    # Verify all outputs have a graph
+    print('\n### Verifying all graphs exist')
+    for val in exes_and_outputs.values():
+        output_file = os.path.join(output_dir, '{}.svg'.format(val))
+        assert(os.path.isfile(output_file))
 
-data = np.loadtxt(output_file)
-
-plt.hist(data, bins=25, density=True)
-plt.plot(x, y)
-plt.title(raw_output.replace('_', ' '))
-plt.savefig(graph_name)
-plt.close()
-
-###########################
-# Beta dist
-###########################
-print('  beta')
-raw_output = exes_and_outputs['rand_beta']
-
-output_file = os.path.join(output_dir, raw_output)
-graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
-
-cpp_alpha = 1.23
-cpp_beta = 2.34
-
-x = np.linspace(0, 1, num=100)
-y = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
-
-data = np.loadtxt(output_file)
-
-plt.hist(data, bins=25, density=True)
-plt.plot(x, y)
-plt.title(raw_output.replace('_', ' '))
-plt.savefig(graph_name)
-plt.close()
-
-###########################
-# Gamma dist
-###########################
-print('  gamma')
-raw_output = exes_and_outputs['rand_gamma']
-
-output_file = os.path.join(output_dir, raw_output)
-graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
-
-cpp_alpha = 4.0
-cpp_beta = 0.5
-
-x = np.linspace(0, 25, num=100)
-y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
-
-data = np.loadtxt(output_file)
-
-plt.hist(data, bins=25, density=True)
-plt.plot(x, y)
-plt.title(raw_output.replace('_', ' '))
-plt.savefig(graph_name)
-plt.close()
+    print('\n### Done.')
 
 
-# Verify all outputs have a graph
-print('\n### Verifying all graphs exist')
-for val in exes_and_outputs.values():
-    output_file = os.path.join(output_dir, '{}.svg'.format(val))
-    assert(os.path.isfile(output_file))
+def plot_normal():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the normal distribution
+    """
+    raw_output = exes_and_outputs['rand_normal']
 
-print('\n### Done.')
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_mean = 1.23
+    cpp_std = 2.34
+
+    x = np.linspace(cpp_mean - 3 * cpp_std, cpp_mean + 3 * cpp_std, num=100)
+    y = scipy.stats.norm.pdf(x, cpp_mean, cpp_std)
+
+    data = np.loadtxt(output_file)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def plot_uniform():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the uniform distribution
+    """
+    raw_output = exes_and_outputs['rand_uniform']
+
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_a = 1.23
+    cpp_b = 2.34
+
+    scipy_loc = cpp_a
+    scipy_scale = cpp_b - cpp_a
+
+    x = np.linspace(cpp_a, cpp_b, num=100)
+    y = scipy.stats.uniform.pdf(x, loc=scipy_loc, scale=scipy_scale)
+
+    data = np.loadtxt(output_file)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def plot_beta():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the beta distribution
+    """
+    raw_output = exes_and_outputs['rand_beta']
+
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_alpha = 1.23
+    cpp_beta = 2.34
+
+    x = np.linspace(0, 1, num=100)
+    y = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
+
+    data = np.loadtxt(output_file)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def plot_gamma():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the gamma distribution
+    """
+    raw_output = exes_and_outputs['rand_gamma']
+
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_alpha = 4.0
+    cpp_beta = 0.5
+
+    x = np.linspace(0, 25, num=100)
+    y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
+
+    data = np.loadtxt(output_file)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+if __name__ == '__main__':
+    main()
