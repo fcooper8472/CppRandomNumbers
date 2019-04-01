@@ -31,6 +31,7 @@ subprocess.call(['cmake', '--build', '.'], cwd=build_dir)
 exes_and_outputs = {
     'rand_normal': "Normal_mean=1.23_std=2.34",
     'rand_uniform': "Uniform_a=1.23_b=2.34",
+    'rand_beta': "Beta_alpha=1.23_beta=2.34",
 }
 
 print('\n### Running executables...')
@@ -86,6 +87,29 @@ scipy_scale = cpp_b - cpp_a
 
 x = np.linspace(cpp_a, cpp_b, num=100)
 y = scipy.stats.uniform.pdf(x, loc=scipy_loc, scale=scipy_scale)
+
+data = np.loadtxt(output_file)
+
+plt.hist(data, bins=25, density=True)
+plt.plot(x, y)
+plt.title(raw_output.replace('_', ' '))
+plt.savefig(graph_name)
+plt.close()
+
+###########################
+# Beta dist
+###########################
+print('  beta')
+raw_output = exes_and_outputs['rand_beta']
+
+output_file = os.path.join(output_dir, raw_output)
+graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+cpp_alpha = 1.23
+cpp_beta = 2.34
+
+x = np.linspace(0, 1, num=100)
+y = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
 
 data = np.loadtxt(output_file)
 
