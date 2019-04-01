@@ -33,3 +33,6 @@ target_link_libraries(rand_exponential -lstdc++fs)
 
 add_executable(rand_half_cauchy RandomSamples/HalfCauchy.cpp)
 target_link_libraries(rand_half_cauchy -lstdc++fs)
+
+add_executable(rand_student_t RandomSamples/StudentT.cpp)
+target_link_libraries(rand_student_t -lstdc++fs)

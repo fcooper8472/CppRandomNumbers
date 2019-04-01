@@ -20,6 +20,7 @@ exes_and_outputs = {
     'rand_cauchy': "Cauchy_mu=8.9_sigma=2.3",
     'rand_exponential': "Exponential_rate=2.3",
     'rand_half_cauchy': "HalfCauchy_mu=1.2_sigma=2.3",
+    'rand_student_t': "StudentT_df=4_mu=9.7_sigma=3.3",
 }
 
 
@@ -72,6 +73,9 @@ def main():
 
     print('  half cauchy')
     plot_half_cauchy()
+
+    print('  student t')
+    plot_student_t()
 
     # Verify all outputs have a graph
     print('\n### Verifying all graphs exist')
@@ -271,6 +275,34 @@ def plot_half_cauchy():
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
     plt.plot(x, z, 'g')
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def plot_student_t():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the student t distribution
+    """
+    raw_output = exes_and_outputs['rand_student_t']
+
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_df = 4
+    cpp_mu = 9.7
+    cpp_sigma = 3.3
+
+    data = np.loadtxt(output_file)
+    lower = np.quantile(data, 0.005)
+    upper = np.quantile(data, 0.995)
+    data = np.clip(data, lower, upper)
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.t.pdf(x, df=cpp_df, loc=cpp_mu, scale=cpp_sigma)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
     plt.title(raw_output.replace('_', ' '))
     plt.savefig(graph_name)
     plt.close()
