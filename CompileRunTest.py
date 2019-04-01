@@ -32,6 +32,7 @@ exes_and_outputs = {
     'rand_normal': "Normal_mean=1.23_std=2.34",
     'rand_uniform': "Uniform_a=1.23_b=2.34",
     'rand_beta': "Beta_alpha=1.23_beta=2.34",
+    'rand_gamma': "Gamma_alpha=4_beta=0.5",
 }
 
 print('\n### Running executables...')
@@ -110,6 +111,29 @@ cpp_beta = 2.34
 
 x = np.linspace(0, 1, num=100)
 y = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
+
+data = np.loadtxt(output_file)
+
+plt.hist(data, bins=25, density=True)
+plt.plot(x, y)
+plt.title(raw_output.replace('_', ' '))
+plt.savefig(graph_name)
+plt.close()
+
+###########################
+# Gamma dist
+###########################
+print('  gamma')
+raw_output = exes_and_outputs['rand_gamma']
+
+output_file = os.path.join(output_dir, raw_output)
+graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+cpp_alpha = 4.0
+cpp_beta = 0.5
+
+x = np.linspace(0, 25, num=100)
+y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
 
 data = np.loadtxt(output_file)
 
