@@ -9,11 +9,11 @@ int main() {
 
     // Params
     const std::size_t n = 100'000;
-    const double mean = 1.23;
-    const double std_dev = 2.34;
+    const double a = 1.23;
+    const double b = 2.34;
 
-    // Create distribution
-    std::normal_distribution<double> dist{mean, std_dev};
+    // Create distribution. Note support is [a, b) not [a, b].  Use std::nextafter(b, b + 1.0) if you care.
+    std::uniform_real_distribution<double> dist{a, b};
 
     // Create and fill the vector
     std::vector<double> vec(n);
@@ -21,7 +21,7 @@ int main() {
         x = dist(gen);
     }
 
-    PrintVectorToFile("Normal_mean=1.23_std=2.34", vec);  // This is just for testing and can be removed
+    PrintVectorToFile("Uniform_a=1.23_b=2.34", vec);  // This is just for testing and can be removed
 
     return 0;
 }

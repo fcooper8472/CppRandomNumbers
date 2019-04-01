@@ -15,3 +15,6 @@ endif ()
 
 add_executable(rand_normal RandomSamples/Normal.cpp)
 target_link_libraries(rand_normal -lstdc++fs)
+
+add_executable(rand_uniform RandomSamples/Uniform.cpp)
+target_link_libraries(rand_uniform -lstdc++fs)
