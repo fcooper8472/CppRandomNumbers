@@ -18,6 +18,7 @@ exes_and_outputs = {
     'rand_beta': "Beta_alpha=1.23_beta=2.34",
     'rand_gamma': "Gamma_alpha=4_beta=0.5",
     'rand_cauchy': "Cauchy_mu=8.9_sigma=2.3",
+    'rand_exponential': "Exponential_rate=2.3",
 }
 
 
@@ -64,6 +65,9 @@ def main():
 
     print('  cauchy')
     plot_cauchy()
+
+    print('  exponential')
+    plot_exponential()
 
     # Verify all outputs have a graph
     print('\n### Verifying all graphs exist')
@@ -189,9 +193,24 @@ def plot_cauchy():
     y = scipy.stats.cauchy.pdf(x, loc=cpp_mu, scale=cpp_sigma)
 
     z = scipy.stats.cauchy(loc=cpp_mu, scale=cpp_sigma)
+def plot_exponential():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the cauchy distribution
+    """
+    raw_output = exes_and_outputs['rand_exponential']
+
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_rate = 2.34
 
     data = np.loadtxt(output_file)
-    data = np.clip(data, cpp_mu - 10.0 * cpp_sigma, cpp_mu + 10.0 * cpp_sigma)
+    lower = 0.0
+    upper = np.quantile(data, 0.99)
+    data = np.clip(data, lower, upper)
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.expon.pdf(x, scale=1. / cpp_rate)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
