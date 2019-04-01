@@ -90,10 +90,13 @@ def plot_normal():
     cpp_mean = 1.23
     cpp_std = 2.34
 
-    x = np.linspace(cpp_mean - 3 * cpp_std, cpp_mean + 3 * cpp_std, num=100)
-    y = scipy.stats.norm.pdf(x, cpp_mean, cpp_std)
-
     data = np.loadtxt(output_file)
+    lower = np.quantile(data, 0.005)
+    upper = np.quantile(data, 0.995)
+    data = np.clip(data, lower, upper)
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.norm.pdf(x, cpp_mean, cpp_std)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
@@ -114,13 +117,15 @@ def plot_uniform():
     cpp_a = 1.23
     cpp_b = 2.34
 
+    data = np.loadtxt(output_file)
+    lower = 1.23
+    upper = 2.34
+
     scipy_loc = cpp_a
     scipy_scale = cpp_b - cpp_a
 
-    x = np.linspace(cpp_a, cpp_b, num=100)
+    x = np.linspace(lower, upper, num=100)
     y = scipy.stats.uniform.pdf(x, loc=scipy_loc, scale=scipy_scale)
-
-    data = np.loadtxt(output_file)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
@@ -141,10 +146,12 @@ def plot_beta():
     cpp_alpha = 1.23
     cpp_beta = 2.34
 
-    x = np.linspace(0, 1, num=100)
-    y = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
-
     data = np.loadtxt(output_file)
+    lower = 0.0
+    upper = 1.0
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
@@ -165,10 +172,13 @@ def plot_gamma():
     cpp_alpha = 4.0
     cpp_beta = 0.5
 
-    x = np.linspace(0, 25, num=100)
-    y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
-
     data = np.loadtxt(output_file)
+    lower = 0.0
+    upper = np.quantile(data, 0.99)
+    data = np.clip(data, lower, upper)
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
@@ -189,10 +199,21 @@ def plot_cauchy():
     cpp_mu = 8.9
     cpp_sigma = 2.3
 
-    x = np.linspace(cpp_mu - 10.0 * cpp_sigma, cpp_mu + 10.0 * cpp_sigma, num=100)
+    data = np.loadtxt(output_file)
+    lower = np.quantile(data, 0.05)
+    upper = np.quantile(data, 0.95)
+    data = np.clip(data, lower, upper)
+
+    x = np.linspace(lower, upper, num=100)
     y = scipy.stats.cauchy.pdf(x, loc=cpp_mu, scale=cpp_sigma)
 
-    z = scipy.stats.cauchy(loc=cpp_mu, scale=cpp_sigma)
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
 def plot_exponential():
     """
     Plot the data from the C++ script against the scipy pdf, for the cauchy distribution
