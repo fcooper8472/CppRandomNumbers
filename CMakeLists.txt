@@ -24,3 +24,6 @@ target_link_libraries(rand_beta -lstdc++fs)
 
 add_executable(rand_gamma RandomSamples/Gamma.cpp)
 target_link_libraries(rand_gamma -lstdc++fs)
+
+add_executable(rand_cauchy RandomSamples/Cauchy.cpp)
+target_link_libraries(rand_cauchy -lstdc++fs)

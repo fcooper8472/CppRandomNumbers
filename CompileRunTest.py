@@ -17,6 +17,7 @@ exes_and_outputs = {
     'rand_uniform': "Uniform_a=1.23_b=2.34",
     'rand_beta': "Beta_alpha=1.23_beta=2.34",
     'rand_gamma': "Gamma_alpha=4_beta=0.5",
+    'rand_cauchy': "Cauchy_mu=8.9_sigma=2.3",
 }
 
 
@@ -60,6 +61,9 @@ def main():
 
     print('  gamma')
     plot_gamma()
+
+    print('  cauchy')
+    plot_cauchy()
 
     # Verify all outputs have a graph
     print('\n### Verifying all graphs exist')
@@ -161,6 +165,33 @@ def plot_gamma():
     y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
 
     data = np.loadtxt(output_file)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def plot_cauchy():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the cauchy distribution
+    """
+    raw_output = exes_and_outputs['rand_cauchy']
+
+    output_file = os.path.join(output_dir, raw_output)
+    graph_name = os.path.join(output_dir, '{}.svg'.format(raw_output))
+
+    cpp_mu = 8.9
+    cpp_sigma = 2.3
+
+    x = np.linspace(cpp_mu - 10.0 * cpp_sigma, cpp_mu + 10.0 * cpp_sigma, num=100)
+    y = scipy.stats.cauchy.pdf(x, loc=cpp_mu, scale=cpp_sigma)
+
+    z = scipy.stats.cauchy(loc=cpp_mu, scale=cpp_sigma)
+
+    data = np.loadtxt(output_file)
+    data = np.clip(data, cpp_mu - 10.0 * cpp_sigma, cpp_mu + 10.0 * cpp_sigma)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
