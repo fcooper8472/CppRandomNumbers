@@ -13,6 +13,17 @@ else ()
     add_compile_options (-Wall -Wextra -pedantic)
 endif ()
 
+########
+# PDFs #
+########
+add_executable(pdf_normal ProbabilityDensities/Normal.cpp)
+target_link_libraries(pdf_normal -lstdc++fs)
+
+
+
+##################
+# Random samples #
+##################
 add_executable(rand_normal RandomSamples/Normal.cpp)
 target_link_libraries(rand_normal -lstdc++fs)
 
