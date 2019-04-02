@@ -1,5 +1,5 @@
-#ifndef CPPRANDOMNUMBERS_PRINTVECTORTOFILE_HPP
-#define CPPRANDOMNUMBERS_PRINTVECTORTOFILE_HPP
+#ifndef CPPRANDOMNUMBERS_UTILITIES_HPP
+#define CPPRANDOMNUMBERS_UTILITIES_HPP
 
 #include <cmath>
 #include <filesystem>
@@ -71,4 +71,4 @@ void PrintPdfToFile(ProbabilityDensityFunction* pPdf, const std::string &fname, 
     f.close();
 }
 
-#endif //CPPRANDOMNUMBERS_PRINTVECTORTOFILE_HPP
+#endif //CPPRANDOMNUMBERS_UTILITIES_HPP
