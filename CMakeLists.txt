@@ -22,6 +22,9 @@ target_link_libraries(pdf_normal -lstdc++fs)
 add_executable(pdf_uniform ProbabilityDensities/Uniform.cpp)
 target_link_libraries(pdf_uniform -lstdc++fs)
 
+add_executable(pdf_beta ProbabilityDensities/Beta.cpp)
+target_link_libraries(pdf_beta -lstdc++fs)
+
 
 
 ##################

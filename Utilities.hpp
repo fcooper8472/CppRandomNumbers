@@ -65,7 +65,7 @@ void PrintPdfToFile(ProbabilityDensityFunction* pPdf, const std::string &fname, 
     f.open(output_dir / fname);
 
     for (std::size_t i = 0; i < n; ++i) {
-        f << x_vals[i] << ',' << pdf_vals[i] << log_vals[i] << '\n';
+        f << x_vals[i] << ',' << pdf_vals[i] << ',' << log_vals[i] << '\n';
     }
 
     f.close();
