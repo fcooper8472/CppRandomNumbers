@@ -21,7 +21,7 @@ public:
             mB(b) {
         assert(mA < mB);
         mHeight = 1.0 / (mB - mA);
-        mLogHeight = std::log(mHeight);
+        mLogHeight = -std::log(mB - mA);
     }
 
     double Pdf(const double x) override {
