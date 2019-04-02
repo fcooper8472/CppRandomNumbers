@@ -14,21 +14,21 @@ build_dir = os.path.join(script_dir, 'Debug')
 
 # Define the C++ targets and associated data files
 pdf_exes_and_outputs = {
-    'pdf_normal': "Normal_mean=8.9_std=2.3",
-    'pdf_uniform': "Uniform_a=1.2_b=2.8",
     'pdf_beta': "Beta_alpha=2.6_beta=4.9",
     'pdf_gamma': "Gamma_alpha=2.6_beta=0.8",
+    'pdf_normal': "Normal_mean=8.9_std=2.3",
+    'pdf_uniform': "Uniform_a=1.2_b=2.8",
 }
 
 sample_exes_and_outputs = {
-    'rand_normal': "Normal_mean=1.23_std=2.34",
-    'rand_uniform': "Uniform_a=1.23_b=2.34",
     'rand_beta': "Beta_alpha=1.23_beta=2.34",
-    'rand_gamma': "Gamma_alpha=4_beta=0.5",
     'rand_cauchy': "Cauchy_mu=8.9_sigma=2.3",
     'rand_exponential': "Exponential_rate=2.3",
+    'rand_gamma': "Gamma_alpha=4_beta=0.5",
     'rand_half_cauchy': "HalfCauchy_mu=1.2_sigma=2.3",
+    'rand_normal': "Normal_mean=1.23_std=2.34",
     'rand_student_t': "StudentT_df=4_mu=9.7_sigma=3.3",
+    'rand_uniform': "Uniform_a=1.23_b=2.34",
 }
 
 
@@ -67,10 +67,10 @@ def main():
         assert(os.path.isfile(output_file))
 
     print('\n### Creating pdf graphs for...')
-    pdf_plot_normal()
-    pdf_plot_uniform()
     pdf_plot_beta()
     pdf_plot_gamma()
+    pdf_plot_normal()
+    pdf_plot_uniform()
     # pdf_plot_cauchy()
     # pdf_plot_exponential()
     # pdf_plot_half_cauchy()
@@ -100,14 +100,14 @@ def main():
         assert(os.path.isfile(output_file))
 
     print('\n### Creating sample graphs for...')
-    sample_plot_normal()
-    sample_plot_uniform()
     sample_plot_beta()
-    sample_plot_gamma()
     sample_plot_cauchy()
     sample_plot_exponential()
+    sample_plot_gamma()
     sample_plot_half_cauchy()
+    sample_plot_normal()
     sample_plot_student_t()
+    sample_plot_uniform()
 
     # Verify all sample outputs have a graph
     print('\n### Verifying all graphs exist')
@@ -118,6 +118,86 @@ def main():
     ####################################################################################################################
 
     print('\n### Done.')
+
+
+def pdf_plot_beta():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the beta distribution
+    """
+    print('  beta')
+
+    raw_output = pdf_exes_and_outputs['pdf_beta']
+
+    output_file = os.path.join(output_pdf_dir, raw_output)
+    graph_name = os.path.join(output_pdf_dir, '{}.svg'.format(raw_output))
+
+    cpp_alpha = 2.6
+    cpp_beta = 4.9
+
+    data = np.loadtxt(output_file, delimiter=',')
+    x = data[:, 0]
+    pdf = data[:, 1]
+    log = data[:, 2]
+
+    scipy_pdf = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
+    scipy_log = scipy.stats.beta.logpdf(x, a=cpp_alpha, b=cpp_beta)
+
+    plt.figure(figsize=(14, 6))
+    plt.subplot(121)
+    plt.plot(x, scipy_pdf, 'orange')
+    plt.plot(x, pdf, 'g:', linewidth=5)
+    plt.title('pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.subplot(122)
+    plt.plot(x, scipy_log, 'orange')
+    plt.plot(x, log, 'g:', linewidth=5)
+    plt.title('log pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.gcf().suptitle(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def pdf_plot_gamma():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the gamma distribution
+    """
+    print('  gamma')
+
+    raw_output = pdf_exes_and_outputs['pdf_gamma']
+
+    output_file = os.path.join(output_pdf_dir, raw_output)
+    graph_name = os.path.join(output_pdf_dir, '{}.svg'.format(raw_output))
+
+    cpp_alpha = 2.6
+    cpp_beta = 0.8
+
+    data = np.loadtxt(output_file, delimiter=',')
+    x = data[:, 0]
+    pdf = data[:, 1]
+    log = data[:, 2]
+
+    scipy_pdf = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
+    scipy_log = scipy.stats.gamma.logpdf(x, a=cpp_alpha, scale=1 / cpp_beta)
+
+    plt.figure(figsize=(14, 6))
+    plt.subplot(121)
+    plt.plot(x, scipy_pdf, 'orange')
+    plt.plot(x, pdf, 'g:', linewidth=5)
+    plt.title('pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.subplot(122)
+    plt.plot(x, scipy_log, 'orange')
+    plt.plot(x, log, 'g:', linewidth=5)
+    plt.title('log pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.gcf().suptitle(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
 
 
 def pdf_plot_normal():
@@ -203,145 +283,6 @@ def pdf_plot_uniform():
     plt.close()
 
 
-def pdf_plot_beta():
-    """
-    Plot the data from the C++ script against the scipy pdf, for the beta distribution
-    """
-    print('  beta')
-
-    raw_output = pdf_exes_and_outputs['pdf_beta']
-
-    output_file = os.path.join(output_pdf_dir, raw_output)
-    graph_name = os.path.join(output_pdf_dir, '{}.svg'.format(raw_output))
-
-    cpp_alpha = 2.6
-    cpp_beta = 4.9
-
-    data = np.loadtxt(output_file, delimiter=',')
-    x = data[:, 0]
-    pdf = data[:, 1]
-    log = data[:, 2]
-
-    scipy_pdf = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
-    scipy_log = scipy.stats.beta.logpdf(x, a=cpp_alpha, b=cpp_beta)
-
-    plt.figure(figsize=(14, 6))
-    plt.subplot(121)
-    plt.plot(x, scipy_pdf, 'orange')
-    plt.plot(x, pdf, 'g:', linewidth=5)
-    plt.title('pdf')
-    plt.gca().set_facecolor('0.85')
-
-    plt.subplot(122)
-    plt.plot(x, scipy_log, 'orange')
-    plt.plot(x, log, 'g:', linewidth=5)
-    plt.title('log pdf')
-    plt.gca().set_facecolor('0.85')
-
-    plt.gcf().suptitle(raw_output.replace('_', ' '))
-    plt.savefig(graph_name)
-    plt.close()
-
-
-def pdf_plot_gamma():
-    """
-    Plot the data from the C++ script against the scipy pdf, for the gamma distribution
-    """
-    print('  gamma')
-
-    raw_output = pdf_exes_and_outputs['pdf_gamma']
-
-    output_file = os.path.join(output_pdf_dir, raw_output)
-    graph_name = os.path.join(output_pdf_dir, '{}.svg'.format(raw_output))
-
-    cpp_alpha = 2.6
-    cpp_beta = 0.8
-
-    data = np.loadtxt(output_file, delimiter=',')
-    x = data[:, 0]
-    pdf = data[:, 1]
-    log = data[:, 2]
-
-    scipy_pdf = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
-    scipy_log = scipy.stats.gamma.logpdf(x, a=cpp_alpha, scale=1 / cpp_beta)
-
-    plt.figure(figsize=(14, 6))
-    plt.subplot(121)
-    plt.plot(x, scipy_pdf, 'orange')
-    plt.plot(x, pdf, 'g:', linewidth=5)
-    plt.title('pdf')
-    plt.gca().set_facecolor('0.85')
-
-    plt.subplot(122)
-    plt.plot(x, scipy_log, 'orange')
-    plt.plot(x, log, 'g:', linewidth=5)
-    plt.title('log pdf')
-    plt.gca().set_facecolor('0.85')
-
-    plt.gcf().suptitle(raw_output.replace('_', ' '))
-    plt.savefig(graph_name)
-    plt.close()
-
-
-def sample_plot_normal():
-    """
-    Plot the data from the C++ script against the scipy pdf, for the normal distribution
-    """
-    print('  normal')
-
-    raw_output = sample_exes_and_outputs['rand_normal']
-
-    output_file = os.path.join(output_sample_dir, raw_output)
-    graph_name = os.path.join(output_sample_dir, '{}.svg'.format(raw_output))
-
-    cpp_mean = 1.23
-    cpp_std = 2.34
-
-    data = np.loadtxt(output_file)
-    lower = np.quantile(data, 0.005)
-    upper = np.quantile(data, 0.995)
-    data = np.clip(data, lower, upper)
-
-    x = np.linspace(lower, upper, num=100)
-    y = scipy.stats.norm.pdf(x, cpp_mean, cpp_std)
-
-    plt.hist(data, bins=25, density=True)
-    plt.plot(x, y)
-    plt.title(raw_output.replace('_', ' '))
-    plt.savefig(graph_name)
-    plt.close()
-
-
-def sample_plot_uniform():
-    """
-    Plot the data from the C++ script against the scipy pdf, for the uniform distribution
-    """
-    print('  uniform')
-    raw_output = sample_exes_and_outputs['rand_uniform']
-
-    output_file = os.path.join(output_sample_dir, raw_output)
-    graph_name = os.path.join(output_sample_dir, '{}.svg'.format(raw_output))
-
-    cpp_a = 1.23
-    cpp_b = 2.34
-
-    data = np.loadtxt(output_file)
-    lower = 1.23
-    upper = 2.34
-
-    scipy_loc = cpp_a
-    scipy_scale = cpp_b - cpp_a
-
-    x = np.linspace(lower, upper, num=100)
-    y = scipy.stats.uniform.pdf(x, loc=scipy_loc, scale=scipy_scale)
-
-    plt.hist(data, bins=25, density=True)
-    plt.plot(x, y)
-    plt.title(raw_output.replace('_', ' '))
-    plt.savefig(graph_name)
-    plt.close()
-
-
 def sample_plot_beta():
     """
     Plot the data from the C++ script against the scipy pdf, for the beta distribution
@@ -361,34 +302,6 @@ def sample_plot_beta():
 
     x = np.linspace(lower, upper, num=100)
     y = scipy.stats.beta.pdf(x, a=cpp_alpha, b=cpp_beta)
-
-    plt.hist(data, bins=25, density=True)
-    plt.plot(x, y)
-    plt.title(raw_output.replace('_', ' '))
-    plt.savefig(graph_name)
-    plt.close()
-
-
-def sample_plot_gamma():
-    """
-    Plot the data from the C++ script against the scipy pdf, for the gamma distribution
-    """
-    print('  gamma')
-    raw_output = sample_exes_and_outputs['rand_gamma']
-
-    output_file = os.path.join(output_sample_dir, raw_output)
-    graph_name = os.path.join(output_sample_dir, '{}.svg'.format(raw_output))
-
-    cpp_alpha = 4.0
-    cpp_beta = 0.5
-
-    data = np.loadtxt(output_file)
-    lower = 0.0
-    upper = np.quantile(data, 0.99)
-    data = np.clip(data, lower, upper)
-
-    x = np.linspace(lower, upper, num=100)
-    y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
@@ -452,6 +365,34 @@ def sample_plot_exponential():
     plt.close()
 
 
+def sample_plot_gamma():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the gamma distribution
+    """
+    print('  gamma')
+    raw_output = sample_exes_and_outputs['rand_gamma']
+
+    output_file = os.path.join(output_sample_dir, raw_output)
+    graph_name = os.path.join(output_sample_dir, '{}.svg'.format(raw_output))
+
+    cpp_alpha = 4.0
+    cpp_beta = 0.5
+
+    data = np.loadtxt(output_file)
+    lower = 0.0
+    upper = np.quantile(data, 0.99)
+    data = np.clip(data, lower, upper)
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
 def sample_plot_half_cauchy():
     """
     Plot the data from the C++ script against the scipy pdf, for the half cauchy distribution
@@ -485,6 +426,35 @@ def sample_plot_half_cauchy():
     plt.close()
 
 
+def sample_plot_normal():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the normal distribution
+    """
+    print('  normal')
+
+    raw_output = sample_exes_and_outputs['rand_normal']
+
+    output_file = os.path.join(output_sample_dir, raw_output)
+    graph_name = os.path.join(output_sample_dir, '{}.svg'.format(raw_output))
+
+    cpp_mean = 1.23
+    cpp_std = 2.34
+
+    data = np.loadtxt(output_file)
+    lower = np.quantile(data, 0.005)
+    upper = np.quantile(data, 0.995)
+    data = np.clip(data, lower, upper)
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.norm.pdf(x, cpp_mean, cpp_std)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
 def sample_plot_student_t():
     """
     Plot the data from the C++ script against the scipy pdf, for the student t distribution
@@ -506,6 +476,36 @@ def sample_plot_student_t():
 
     x = np.linspace(lower, upper, num=100)
     y = scipy.stats.t.pdf(x, df=cpp_df, loc=cpp_mu, scale=cpp_sigma)
+
+    plt.hist(data, bins=25, density=True)
+    plt.plot(x, y)
+    plt.title(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def sample_plot_uniform():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the uniform distribution
+    """
+    print('  uniform')
+    raw_output = sample_exes_and_outputs['rand_uniform']
+
+    output_file = os.path.join(output_sample_dir, raw_output)
+    graph_name = os.path.join(output_sample_dir, '{}.svg'.format(raw_output))
+
+    cpp_a = 1.23
+    cpp_b = 2.34
+
+    data = np.loadtxt(output_file)
+    lower = 1.23
+    upper = 2.34
+
+    scipy_loc = cpp_a
+    scipy_scale = cpp_b - cpp_a
+
+    x = np.linspace(lower, upper, num=100)
+    y = scipy.stats.uniform.pdf(x, loc=scipy_loc, scale=scipy_scale)
 
     plt.hist(data, bins=25, density=True)
     plt.plot(x, y)
