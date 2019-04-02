@@ -20,6 +20,9 @@ endif ()
 add_executable(pdf_beta ProbabilityDensities/Beta.cpp)
 target_link_libraries(pdf_beta -lstdc++fs)
 
+add_executable(pdf_cauchy ProbabilityDensities/Cauchy.cpp)
+target_link_libraries(pdf_cauchy -lstdc++fs)
+
 add_executable(pdf_gamma ProbabilityDensities/Gamma.cpp)
 target_link_libraries(pdf_gamma -lstdc++fs)
 
