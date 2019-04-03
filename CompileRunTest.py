@@ -20,6 +20,7 @@ pdf_exes_and_outputs = {
     'pdf_gamma': "Gamma_alpha=2.6_beta=0.8",
     'pdf_half_cauchy': "HalfCauchy_mu=0.0_sig=3.5",
     'pdf_normal': "Normal_mean=8.9_std=2.3",
+    'pdf_student_t': "StudentT_location=4.2_scale=6.4_df=3.5",
     'pdf_uniform': "Uniform_a=1.2_b=2.8",
 }
 
@@ -76,8 +77,8 @@ def main():
     pdf_plot_gamma()
     pdf_plot_half_cauchy()
     pdf_plot_normal()
+    pdf_plot_student_t()
     pdf_plot_uniform()
-    # pdf_plot_student_t()
 
     # Verify all sample outputs have a graph
     print('\n### Verifying all graphs exist')
@@ -361,6 +362,47 @@ def pdf_plot_normal():
     plt.close()
 
 
+def pdf_plot_student_t():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the student-t distribution
+    """
+    print('  student-t')
+
+    raw_output = pdf_exes_and_outputs['pdf_student_t']
+
+    output_file = os.path.join(output_pdf_dir, raw_output)
+    graph_name = os.path.join(output_pdf_dir, '{}.svg'.format(raw_output))
+
+    cpp_location = 4.2
+    cpp_scale = 6.4
+    cpp_df = 3.5
+
+    data = np.loadtxt(output_file, delimiter=',')
+    x = data[:, 0]
+    pdf = data[:, 1]
+    log = data[:, 2]
+
+    scipy_pdf = scipy.stats.t.pdf(x, df=cpp_df, loc=cpp_location, scale=cpp_scale)
+    scipy_log = scipy.stats.t.logpdf(x, df=cpp_df, loc=cpp_location, scale=cpp_scale)
+
+    plt.figure(figsize=(14, 6))
+    plt.subplot(121)
+    plt.plot(x, scipy_pdf, 'orange')
+    plt.plot(x, pdf, 'g:', linewidth=5)
+    plt.title('pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.subplot(122)
+    plt.plot(x, scipy_log, 'orange')
+    plt.plot(x, log, 'g:', linewidth=5)
+    plt.title('log pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.gcf().suptitle(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
 def pdf_plot_uniform():
     """
     Plot the data from the C++ script against the scipy pdf, for the uniform distribution
@@ -580,7 +622,7 @@ def sample_plot_student_t():
     """
     Plot the data from the C++ script against the scipy pdf, for the student t distribution
     """
-    print('  student t')
+    print('  student-t')
     raw_output = sample_exes_and_outputs['rand_student_t']
 
     output_file = os.path.join(output_sample_dir, raw_output)

@@ -35,6 +35,9 @@ target_link_libraries(pdf_half_cauchy -lstdc++fs)
 add_executable(pdf_normal ProbabilityDensities/Normal.cpp)
 target_link_libraries(pdf_normal -lstdc++fs)
 
+add_executable(pdf_student_t ProbabilityDensities/StudentT.cpp)
+target_link_libraries(pdf_student_t -lstdc++fs)
+
 add_executable(pdf_uniform ProbabilityDensities/Uniform.cpp)
 target_link_libraries(pdf_uniform -lstdc++fs)
 
