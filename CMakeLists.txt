@@ -29,6 +29,9 @@ target_link_libraries(pdf_exponential -lstdc++fs)
 add_executable(pdf_gamma ProbabilityDensities/Gamma.cpp)
 target_link_libraries(pdf_gamma -lstdc++fs)
 
+add_executable(pdf_half_cauchy ProbabilityDensities/HalfCauchy.cpp)
+target_link_libraries(pdf_half_cauchy -lstdc++fs)
+
 add_executable(pdf_normal ProbabilityDensities/Normal.cpp)
 target_link_libraries(pdf_normal -lstdc++fs)
 

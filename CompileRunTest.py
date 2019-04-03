@@ -18,6 +18,7 @@ pdf_exes_and_outputs = {
     'pdf_cauchy': "Cauchy_mu=7.4_sig=3.5",
     'pdf_exponential': "Exponential_rate=0.4",
     'pdf_gamma': "Gamma_alpha=2.6_beta=0.8",
+    'pdf_half_cauchy': "HalfCauchy_mu=0.0_sig=3.5",
     'pdf_normal': "Normal_mean=8.9_std=2.3",
     'pdf_uniform': "Uniform_a=1.2_b=2.8",
 }
@@ -73,9 +74,9 @@ def main():
     pdf_plot_cauchy()
     pdf_plot_exponential()
     pdf_plot_gamma()
+    pdf_plot_half_cauchy()
     pdf_plot_normal()
     pdf_plot_uniform()
-    # pdf_plot_half_cauchy()
     # pdf_plot_student_t()
 
     # Verify all sample outputs have a graph
@@ -261,6 +262,46 @@ def pdf_plot_gamma():
 
     scipy_pdf = scipy.stats.gamma.pdf(x, a=cpp_alpha, scale=1 / cpp_beta)
     scipy_log = scipy.stats.gamma.logpdf(x, a=cpp_alpha, scale=1 / cpp_beta)
+
+    plt.figure(figsize=(14, 6))
+    plt.subplot(121)
+    plt.plot(x, scipy_pdf, 'orange')
+    plt.plot(x, pdf, 'g:', linewidth=5)
+    plt.title('pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.subplot(122)
+    plt.plot(x, scipy_log, 'orange')
+    plt.plot(x, log, 'g:', linewidth=5)
+    plt.title('log pdf')
+    plt.gca().set_facecolor('0.85')
+
+    plt.gcf().suptitle(raw_output.replace('_', ' '))
+    plt.savefig(graph_name)
+    plt.close()
+
+
+def pdf_plot_half_cauchy():
+    """
+    Plot the data from the C++ script against the scipy pdf, for the half cauchy distribution
+    """
+    print('  half cauchy')
+
+    raw_output = pdf_exes_and_outputs['pdf_half_cauchy']
+
+    output_file = os.path.join(output_pdf_dir, raw_output)
+    graph_name = os.path.join(output_pdf_dir, '{}.svg'.format(raw_output))
+
+    cpp_location = 0.0
+    cpp_scale = 3.5
+
+    data = np.loadtxt(output_file, delimiter=',')
+    x = data[:, 0]
+    pdf = data[:, 1]
+    log = data[:, 2]
+
+    scipy_pdf = scipy.stats.halfcauchy.pdf(x, loc=cpp_location, scale=cpp_scale)
+    scipy_log = scipy.stats.halfcauchy.logpdf(x, loc=cpp_location, scale=cpp_scale)
 
     plt.figure(figsize=(14, 6))
     plt.subplot(121)
