@@ -16,10 +16,11 @@ private:
 
 public:
     explicit UniformDistributionPdf(double a = 0.0, double b = 1.0)
-            :
-            mA(a),
-            mB(b) {
+            : mA(a), mB(b) {
+
+        // Left end-point must be to the left
         assert(mA < mB);
+
         mHeight = 1.0 / (mB - mA);
         mLogHeight = -std::log(mB - mA);
     }

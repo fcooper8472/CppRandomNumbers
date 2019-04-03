@@ -16,9 +16,11 @@ private:
 
 public:
     explicit NormalDistributionPdf(double mean = 0.0, double std_dev = 1.0)
-            :
-            mMean(mean),
-            mStdDev(std_dev) {
+            : mMean(mean), mStdDev(std_dev) {
+
+        // Standard deviation must be positive
+        assert(mStdDev > 0.0);
+
         m2SigSq = 2.0 * mStdDev * mStdDev;
         mPrefactor = 1.0 / std::sqrt(M_PI * m2SigSq);
         mLogPrefactor = -0.5 * std::log(M_PI * m2SigSq);

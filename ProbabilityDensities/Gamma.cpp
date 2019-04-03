@@ -17,9 +17,7 @@ private:
 
 public:
     explicit GammaDistributionPdf(double alpha = 1.0, double beta = 1.0)
-            :
-            mAlpha(alpha),
-            mBeta(beta) {
+            : mAlpha(alpha), mBeta(beta) {
 
         // Both params must be positive
         assert(mAlpha > 0.0);

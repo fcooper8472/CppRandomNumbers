@@ -16,9 +16,7 @@ private:
 
 public:
     explicit CauchyDistributionPdf(double mu = 0.0, double sig = 1.0)
-            :
-            mMu(mu),
-            mSig(sig) {
+            : mMu(mu), mSig(sig) {
 
         // Sig must be positive
         assert(mSig > 0.0);
